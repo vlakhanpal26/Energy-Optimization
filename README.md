@@ -158,8 +158,8 @@ Notes & tips
 - The repository includes a minimal GitHub Actions workflow that installs the dependencies and runs a tiny smoke test. It verifies `numpy` and `cvxpy` can be imported.
 - If you want the output CSVs removed from the repository history entirely (to shrink the repo), I can help with an interactive history rewrite (BFG or git-filter-repo). This is destructive and should be done carefully.
 
-Contact / author
+-----------------------
 
 If you need changes or want me to add tests, documentation, or CI improvements, open an issue or contact me directly.
 
-— vlakhanpal26
+— Vedika

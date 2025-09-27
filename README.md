@@ -1,162 +1,76 @@
-Energy optimization (ISYE 6669) — Project A
+# Energy Optimization — ISYE 6669 (Project)
 
-Hi — this repository contains my work for the ISYE 6669 Project A. I built a small deterministic optimization model (in a Jupyter notebook) to minimize energy costs by scheduling electricity and hydrogen purchases while using a solar forecast.
+## Project overview
+This repository contains my course project for ISYE 6669. The goal is to minimize operational energy costs for a manufacturing facility by optimally scheduling electricity purchases, hydrogen purchases, and asset operation (electrolyser, solar expansion, battery). The work is divided into two parts:
 
-Repository contents
-- `6669_Project_Electricity_Demand.csv` — electricity demand (input)
-- `6669_Project_Electricity_Prices.csv` — electricity prices (input)
-- `6669_Project_Hydrogen_Demand.csv` — hydrogen demand (input)
-- `6669_Project_Solar_Forecast.csv` — solar forecast (input)
-- `PartA_code.ipynb` — the main Jupyter notebook containing the optimization model (cvxpy)
-- `ISYE_6669_ProjectA-2.pdf` — project report
-- `requirements.txt` — minimal Python dependencies (numpy, cvxpy)
-- `LICENSE` — MIT license
-- `.github/workflows/ci.yml` — lightweight CI to install deps and run a smoke test
- - `requirements.txt` — minimal Python dependencies (numpy, cvxpy)
- - `LICENSE` — MIT license
- - `.github/workflows/ci.yml` — lightweight CI to install deps and run a smoke test
+- **Part A (baseline / deterministic)** — formulate and solve the baseline deterministic optimization for electricity and hydrogen procurement and storage. Implemented as a Jupyter notebook.
+- **Part B (design & extensions)** — extend the model to include an electrolyser (on/off decisions), solar expansion decisions, battery integration, and payback calculations. Implemented as a notebook with supplementary scripts and analysis.
 
-Repository layout (organized)
-- `inputs/` — all input CSVs used by the notebooks and scripts
-- `outputs/` — model outputs and generated CSVs (ignored by default)
-- `code/` — notebooks and scripts (Part A and Part B code)
-- `docs/` — PDF reports and other documentation
-- other top-level files: `README.md`, `LICENSE`, `requirements.txt`, `.github/`
+## Repository layout
+- `inputs/` — all raw input CSV files (electricity demand, prices, hydrogen demand, solar forecast).
+- `code/` — notebooks and scripts for Part A and Part B (primary analysis and models).
+- `outputs/` — generated outputs (solution CSVs, electrolyser use). Note: some outputs may be intentionally ignored by `.gitignore`; final deliverables are tracked as needed.
+- `docs/` — reports and PDF deliverables.
+- `requirements.txt` — Python package dependencies.
+- `LICENSE` — project license (MIT).
 
-Files moved/where to look
-- Inputs (examples): `inputs/6669_Project_Electricity_Demand.csv`, `inputs/6669_Project_Electricity_Prices.csv`, `inputs/6669_Project_Hydrogen_Demand.csv`, `inputs/6669_Project_Solar_Forecast.csv`
-- Outputs (examples): `outputs/Solution.csv`, `outputs/Solution_24_hours.csv`, `outputs/Electrolyser_Use.csv`
-- Code: `code/PartA_code.ipynb`, `code/do_partbcode.py`, `code/DO_PartB-2.ipynb`
-- Docs: `docs/ISYE_6669_ProjectA-2.pdf`, `docs/DO_PARTBReport.pdf`
+## Part A
+In this part I:
+- Built a deterministic convex optimization model using CVXPY.
+- Modeled hydrogen storage and electricity purchase decisions with solar forecast incorporated.
+- Solved the model and saved per-hour solutions (CSV).
+- The main implementation is in `code/PartA_code.ipynb`.
 
-Part A (what I did)
-- I implemented a deterministic optimization model using `cvxpy` to schedule electricity and hydrogen purchases while fully utilising available solar.
-- The main notebook is `code/PartA_code.ipynb`. Running it writes solution CSVs into `outputs/`.
+## Part B 
+In this part I:
+- Added discrete electrolyser on/off decisions (binary variables) and electrolyser production.
+- Modeled discrete solar expansion (integer blocks) and battery charge/discharge.
+- Compared costs across configurations and calculated simple payback estimates.
+- The main implementation is in `code/DO_PartB-2.ipynb` (notebook) and supporting materials in `docs/`.
 
-Part B (what I did)
-- Part B continues the same project and extends the analysis to include electrolyser usage and additional constraints.
-- The Part B code and notebook are in `code/` and expect the same `inputs/` CSVs; Part B produces `outputs/Electrolyser_Use.csv` and a short report in `docs/`.
+## Quick setup 
+1. Create and activate a Python virtual environment:
+   - python3 -m venv .venv
+   - source .venv/bin/activate
+2. Install Python dependencies:
+   - pip install -r requirements.txt
+3. Install/enable solvers as required:
+   - For convex problems: ECOS, SCS (pip install ecos scs)
+   - For MIP/integer parts: install CBC or another MIP solver. (System install may be required; see solver docs.)
 
-Quick start (run locally)
-1. Clone or use the local copy:
+## Running the notebooks or scripts
+- Run interactively:
+  - jupyter notebook
+  - open `code/PartA_code.ipynb` or `code/DO_PartB-2.ipynb`
+- Run and execute notebooks headlessly:
+  - jupyter nbconvert --to notebook --execute code/PartA_code.ipynb --inplace
+  - jupyter nbconvert --to notebook --execute code/DO_PartB-2.ipynb --inplace
+- Example: run Part A from terminal (after activating venv)
+  - python -c "import nbformat, nbconvert; ... " (or use nbconvert as above)
+- If notebooks rely on system solvers (CBC), follow solver install instructions before executing those cells.
 
-	git clone https://github.com/vlakhanpal26/energy-optimization.git
-	cd energy-optimization
+## Outputs
+- Primary outputs are saved to `outputs/` (CSV files with hourly results and electrolyser usage).
+- I tracked the stable results in the repo where appropriate. If you expect frequent regenerated outputs, consider using GitHub Releases or Git LFS for large files.
 
-2. Create and activate a virtual environment (macOS / zsh):
+## Reproducibility notes
+- Models use CVXPY; solver availability affects results and feasibility:
+  - Convex relaxations: ECOS, SCS
+  - MIP: CBC, GUROBI, CPLEX, etc.
+- If a solver is unavailable or versions mismatch, results/solve times may differ.
 
-	python3 -m venv .venv
-	source .venv/bin/activate
+## Development & testing
+- To re-run and reproduce results end-to-end:
+  1. Ensure `inputs/` contains the correct CSV files.
+  2. Activate the virtual environment and install dependencies.
+  3. Execute the notebooks in order: Part A → Part B.
+- Check `requirements.txt` and adjust solver-related installs if needed.
 
-3. Install dependencies:
+## License
+This project is released under the MIT License. See `LICENSE` for details.
 
-	pip install --upgrade pip
-	pip install -r requirements.txt
+------------------------------------
+If you have questions or suggestions, feel free to contact me.
 
-4. Run the code:
+-Vedika :)
 
-	- Part A notebook: open `code/PartA_code.ipynb` in Jupyter and run it. It will read from `inputs/` and write `outputs/`.
-	- Part B notebook: open `code/DO_PartB-2.ipynb` or run `python code/do_partbcode.py`.
-
-Notes & tips
-- `cvxpy` may require additional solvers for some problems; try `pip install ecos scs` if you see solver errors.
-- `outputs/` is listed in `.gitignore` so generated outputs are not tracked by default.
-- If you'd like outputs tracked or archived in releases, let me know and I can adjust the workflow.
-
-Author
-
-— vlakhanpal26
-
-Professional summary (student)
----------------------------------
-I am a graduate student and this repository contains my coursework for ISYE 6669 (Project A and its continuation, Part B). The work implements a deterministic optimization model using CVXPY to minimize combined electricity and hydrogen procurement costs while accounting for solar generation. Part B extends the analysis to model electrolyser usage and produces additional outputs and a short report.
-
-Repository structure
---------------------
-- `inputs/` — CSV datasets used as inputs (electricity demand, prices, hydrogen demand, solar forecast)
-- `code/` — notebooks and scripts implementing Part A and Part B analysis (notebooks are the primary artifacts)
-- `outputs/` — generated outputs and result CSVs. Note: outputs are ignored by default; I selectively track final result files for reproducibility.
-- `docs/` — PDF project reports and other documentation
-- `.github/` — CI workflow definitions
-- `requirements.txt`, `LICENSE`, `README.md`
-
-What I implemented
-------------------
-- Part A: deterministic optimization in `code/PartA_code.ipynb` that schedules electricity and hydrogen purchases while fully utilising available solar forecast.
-- Part B: extended analysis (notebook `code/DO_PartB-2.ipynb`) that examines electrolyser usage and additional constraints; results are described in `docs/DO_PARTBReport.pdf` and the relevant outputs are placed in `outputs/`.
-
-Quick setup and run (macOS / zsh)
---------------------------------
-1. Clone the repository and change directory:
-
-	git clone https://github.com/vlakhanpal26/energy-optimization.git
-	cd energy-optimization
-
-2. Create and activate a Python virtual environment:
-
-	python3 -m venv .venv
-	source .venv/bin/activate
-
-3. Install dependencies:
-
-	pip install --upgrade pip
-	pip install -r requirements.txt
-
-4. Run Part A (notebook):
-
-	jupyter notebook code/PartA_code.ipynb
-
-	- Run the notebook cells in order. The notebook reads data from `inputs/` and writes outputs to `outputs/` when executed.
-
-5. Run Part B (notebook):
-
-	jupyter notebook code/DO_PartB-2.ipynb
-
-Notes on outputs and reproducibility
-----------------------------------
-- The `outputs/` directory is ignored by default to avoid committing transient or intermediate files. I have committed final results intentionally when needed (e.g., `outputs/Solution.csv`) for reproducibility.
-- If you need to regenerate outputs, run the notebooks after installing dependencies. For solver-related issues, install additional CVXPY solvers, e.g. `pip install ecos scs`.
-
-Continuous integration
-----------------------
-- A lightweight GitHub Actions workflow is included at `.github/workflows/ci.yml`. It installs dependencies and runs a minimal smoke test to ensure imports succeed.
-
-Licensing and contact
-----------------------
-- License: MIT (see `LICENSE`).
-- If you have questions or want me to add tests, CI steps, or example runs, open an issue or contact me via my GitHub profile: `vlakhanpal26`.
-
-— V. Lakhanpal 
-
-
-Quick start (run locally)
-1. Clone the repo (or use the local copy):
-
-	git clone https://github.com/vlakhanpal26/energy-optimization.git
-	cd energy-optimization
-
-2. Create and activate a virtual environment (macOS / zsh):
-
-	python3 -m venv .venv
-	source .venv/bin/activate
-
-3. Install dependencies:
-
-	pip install --upgrade pip
-	pip install -r requirements.txt
-
-4. Start Jupyter and open the notebook:
-
-	jupyter notebook PartA_code.ipynb
-
-	Then run the cells in order. The notebook reads the CSV inputs, builds and solves the cvxpy problem, prints result vectors, and writes the solution CSVs when executed.
-
-Notes & tips
-- The notebook uses `cvxpy` and assumes a working solver is available (cvxpy will use its default solver). If you run into solver issues, try installing `ecos`, `scs`, or another supported solver: `pip install ecos scs`.
-- The repository includes a minimal GitHub Actions workflow that installs the dependencies and runs a tiny smoke test. It verifies `numpy` and `cvxpy` can be imported.
-
------------------------
-
-If you need changes or want me to add tests, documentation, or CI improvements, open an issue or contact me directly.
-
-— Vedika

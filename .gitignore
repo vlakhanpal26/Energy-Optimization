@@ -22,5 +22,5 @@ env/
 
 # CSV and outputs
 # It's usually better to avoid committing generated outputs. Uncomment to ignore them.
-Solution.csv
-Solution_24_hours.csv
+outputs/
+.DS_Store
